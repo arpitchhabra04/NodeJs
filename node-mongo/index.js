@@ -10,36 +10,37 @@ MongoClient.connect(url, (err, client) => {
 
   const db = client.db(dbname);
 
-  dboper.insertDocument(
-    db,
-    { name: "Arpit", description: "Developer" },
-    "dishes",
-    result => {
-      console.log("Insert document:\n", result.ops);
+  dboper
+    .insertDocument(db, { name: "Vadonut", description: "Test" }, "dishes")
+    .then(result => {
+      console.log("Insert Document:\n", result.ops);
 
-      dboper.findDocuments(db, "dishes", docs => {
-        console.log("Found Documents:\n", docs);
+      return dboper.findDocuments(db, "dishes");
+    })
+    .then(docs => {
+      console.log("Found Documents:\n", docs);
 
-        dboper.updateDocument(
-          db,
-          { name: "Arpit" },
-          { description: "update developer" },
-          "dishes",
-          result => {
-            console.log("Updated document:\n", result.result);
+      return dboper.updateDocument(
+        db,
+        { name: "Vadonut" },
+        { description: "Updated Test" },
+        "dishes"
+      );
+    })
+    .then(result => {
+      console.log("Updated Document:\n", result.result);
 
-            dboper.findDocuments(db, "dishes", docs => {
-              console.log("Found updated Documents:\n", docs);
+      return dboper.findDocuments(db, "dishes");
+    })
+    .then(docs => {
+      console.log("Found Updated Documents:\n", docs);
 
-              db.dropCollection("dishes", result => {
-                console.log("Dropped Collection: ", result);
+      return db.dropCollection("dishes");
+    })
+    .then(result => {
+      console.log("Dropped Collection: ", result);
 
-                client.close();
-              });
-            });
-          }
-        );
-      });
-    }
-  );
+      return client.close();
+    })
+    .catch(err => console.log(err));
 });
